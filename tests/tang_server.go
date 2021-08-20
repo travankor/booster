@@ -11,6 +11,7 @@ import (
 	"testing"
 )
 
+// TangServer represents a running tang process
 type TangServer struct {
 	binaryPath string
 	keysDir    string
@@ -19,6 +20,7 @@ type TangServer struct {
 	port       int
 }
 
+// NewTangServer creates and launches a tang server for a given keys
 func NewTangServer(keysDir string) (*TangServer, error) {
 	path, err := findTangdLocation()
 	if err != nil {
@@ -42,6 +44,7 @@ func NewTangServer(keysDir string) (*TangServer, error) {
 	return s, nil
 }
 
+// Stop stops the tang process
 func (s *TangServer) Stop() {
 	close(s.quit)
 	_ = s.listener.Close()
@@ -103,5 +106,5 @@ func findTangdLocation() (string, error) {
 			return path, nil
 		}
 	}
-	return "", fmt.Errorf("Cannot find 'tangd' binary location")
+	return "", fmt.Errorf("cannot find 'tangd' binary location")
 }

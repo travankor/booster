@@ -2,16 +2,18 @@ package main
 
 import "net"
 
+// InitNetworkConfig is a config section for network specific options
 type InitNetworkConfig struct {
 	Interfaces []net.HardwareAddr `yaml:",omitempty"` // list of active interfaces to use
 
 	Dhcp bool `yaml:",omitempty"`
 
-	Ip         string `yaml:",omitempty"`            // e.g. 10.0.2.15/24
+	IP         string `yaml:",omitempty"`            // e.g. 10.0.2.15/24
 	Gateway    string `yaml:",omitempty"`            // e.g. 10.0.2.255
 	DNSServers string `yaml:"dns_servers,omitempty"` // comma-separated list of ips, e.g. 10.0.1.1,8.8.8.8
 }
 
+// VirtualConsole is a config section for console specific options
 type VirtualConsole struct {
 	KeymapFile      string `yaml:",omitempty"`
 	Utf             bool   `yaml:",omitempty"`
@@ -20,6 +22,7 @@ type VirtualConsole struct {
 	FontUnicodeFile string `yaml:",omitempty"`
 }
 
+// InitConfig represents top-level section for config passed from generator to init
 type InitConfig struct {
 	Network                *InitNetworkConfig  `yaml:",omitempty"`
 	ModuleDependencies     map[string][]string `yaml:",omitempty"`

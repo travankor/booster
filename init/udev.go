@@ -33,9 +33,11 @@ func isValidDmEvent(ev *uevent.Uevent) bool {
 	}
 
 	const (
+		// revive:disable:var-naming let's use names defined by libudev
 		DM_UDEV_FLAGS_SHIFT           = 16
 		DM_UDEV_DISABLE_DM_RULES_FLAG = 0x0001
 		DM_UDEV_PRIMARY_SOURCE_FLAG   = 0x0040
+		// revive:enable:var-naming
 	)
 	flags := cookie >> DM_UDEV_FLAGS_SHIFT
 
@@ -158,7 +160,7 @@ func handleBlockDeviceUevent(ev *uevent.Uevent) error {
 	}
 
 	if mdNameRe.MatchString(devName) {
-		return handleMdRaidUevent(ev)
+		return handleMdraidUevent(ev)
 	}
 
 	if ev.Action == "add" {
@@ -168,14 +170,14 @@ func handleBlockDeviceUevent(ev *uevent.Uevent) error {
 	return nil
 }
 
-func handleMdRaidUevent(ev *uevent.Uevent) error {
+func handleMdraidUevent(ev *uevent.Uevent) error {
 	devName := ev.Vars["DEVNAME"]
 
 	if err := addBlockDevice(devName); err != nil {
 		return err
 	}
 
-	// for mdraid there is a special case - add /dev/md/ArrayName symlink
+	// for Mdraid there is a special case - add /dev/md/ArrayName symlink
 	out, err := exec.Command("mdadm", "--export", "--detail", "/dev/"+devName).CombinedOutput()
 	if err != nil {
 		return err
@@ -187,7 +189,7 @@ func handleMdRaidUevent(ev *uevent.Uevent) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("mdraid array %s does not have a MD_DEVNAME property", devName)
+		return fmt.Errorf("Mdraid array %s does not have a MD_DEVNAME property", devName)
 	}
 
 	return nil
@@ -196,7 +198,7 @@ func handleMdRaidUevent(ev *uevent.Uevent) error {
 var errIgnoredMapperEvent = fmt.Errorf("ignored device mapper event")
 
 // handleMapperDeviceUevent handles device mapper related uevent
-// if udev event is valid then it return non-empty string that contains
+// if udev event is valid then it returns non-empty string that contains
 // new mapper device name (e.g. /dev/mapper/name)
 func handleMapperDeviceUevent(ev *uevent.Uevent) error {
 	if !isValidDmEvent(ev) {

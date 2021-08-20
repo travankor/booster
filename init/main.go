@@ -196,10 +196,10 @@ func handleMdraidBlockDevice(info *blkInfo, devpath string) error {
 			cmd.Stdout = os.Stdout
 		}
 		return cmd.Run()
-	} else {
-		debug("MdRaid support is disabled, ignoring mdraid device %s", devpath)
-		return nil
 	}
+
+	debug("mdraid support is disabled, ignoring mdraid device %s", devpath)
+	return nil
 }
 
 func handleLvmBlockDevice(devpath string) error {
@@ -211,10 +211,10 @@ func handleLvmBlockDevice(devpath string) error {
 			cmd.Stdout = os.Stdout
 		}
 		return cmd.Run()
-	} else {
-		debug("LVM support is disabled, ignoring lvm physical volume %s", devpath)
-		return nil
 	}
+
+	debug("LVM support is disabled, ignoring lvm physical volume %s", devpath)
+	return nil
 }
 
 func resume(devpath string) error {
@@ -514,7 +514,7 @@ func switchRoot() error {
 	// Run the OS init
 	debug("Switching to the new userspace now. Да пабачэння!")
 	if err := unix.Exec(newInitBin, initArgs, nil); err != nil {
-		return fmt.Errorf("Can't run the rootfs init (%v): %v", newInitBin, err)
+		return fmt.Errorf("can't run the rootfs init (%v): %v", newInitBin, err)
 	}
 	return nil // unreachable
 }
@@ -663,7 +663,7 @@ func boost() error {
 	if config.MountTimeout != 0 {
 		timeout := waitTimeout(&rootMounted, time.Duration(config.MountTimeout)*time.Second)
 		if timeout {
-			return fmt.Errorf("Timeout waiting for root filesystem")
+			return fmt.Errorf("timeout waiting for root filesystem")
 		}
 	} else {
 		// wait for mount forever

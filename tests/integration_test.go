@@ -73,7 +73,7 @@ func generateInitRamfs(opts Opts) (string, error) {
 		cmd.Stderr = os.Stderr
 	}
 	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("Cannot generate booster.img: %v", err)
+		return "", fmt.Errorf("cannot generate booster.img: %v", err)
 	}
 
 	// check generated image integrity
@@ -90,7 +90,7 @@ func generateInitRamfs(opts Opts) (string, error) {
 	case "lz4":
 		verifyCmd = exec.Command("lz4", "--test", output)
 	default:
-		return "", fmt.Errorf("Unknown compression: %s", opts.compression)
+		return "", fmt.Errorf("unknown compression format: %s", opts.compression)
 	}
 	if testing.Verbose() {
 		verifyCmd.Stdout = os.Stdout
@@ -108,7 +108,7 @@ type NetworkConfig struct {
 
 	Dhcp bool `yaml:",omitempty"`
 
-	Ip         string `yaml:",omitempty"` // e.g. 10.0.2.15/24
+	IP         string `yaml:",omitempty"` // e.g. 10.0.2.15/24
 	Gateway    string `yaml:",omitempty"` // e.g. 10.0.2.255
 	DNSServers string `yaml:"dns_servers,omitempty"`
 }
@@ -143,7 +143,7 @@ func generateBoosterConfig(opts Opts) (string, error) {
 		if opts.useDhcp {
 			net.Dhcp = true
 		} else {
-			net.Ip = "10.0.2.15/24"
+			net.IP = "10.0.2.15/24"
 		}
 
 		net.Interfaces = opts.activeNetIfaces
@@ -188,7 +188,7 @@ type Opts struct {
 	disks                []vmtest.QemuDisk
 	mountTimeout         int // in seconds
 	extraFiles           string
-	checkVmState         func(vm *vmtest.Qemu, t *testing.T)
+	checkVMState         func(vm *vmtest.Qemu, t *testing.T)
 	forceKill            bool // if true then kill VM rather than do a graceful shutdown
 	stripBinaries        bool
 	enableVirtualConsole bool
@@ -198,9 +198,9 @@ type Opts struct {
 }
 
 func boosterTest(opts Opts) func(*testing.T) {
-	if opts.checkVmState == nil {
+	if opts.checkVMState == nil {
 		// default simple check
-		opts.checkVmState = func(vm *vmtest.Qemu, t *testing.T) {
+		opts.checkVMState = func(vm *vmtest.Qemu, t *testing.T) {
 			require.NoError(t, vm.ConsoleExpect("Hello, booster!"))
 		}
 	}
@@ -303,7 +303,7 @@ func boosterTest(opts Opts) func(*testing.T) {
 			require.NoError(t, vm.ConsoleExpect(opts.prompt))
 			require.NoError(t, vm.ConsoleWrite(opts.password+"\n"))
 		}
-		opts.checkVmState(vm, t)
+		opts.checkVMState(vm, t)
 	}
 }
 
@@ -344,7 +344,7 @@ func compileBinaries(dir string) error {
 		cmd.Stderr = os.Stderr
 	}
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("Cannot build init binary: %v", err)
+		return fmt.Errorf("cannot build init binary: %v", err)
 	}
 
 	// Generate initramfs
@@ -358,13 +358,13 @@ func compileBinaries(dir string) error {
 		cmd.Stderr = os.Stderr
 	}
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("Cannot build generator binary: %v", err)
+		return fmt.Errorf("cannot build generator binary: %v", err)
 	}
 
 	return os.Chdir(cwd)
 }
 
-func runSshCommand(t *testing.T, conn *ssh.Client, command string) string {
+func runSSHCommand(t *testing.T, conn *ssh.Client, command string) string {
 	sessAnalyze, err := conn.NewSession()
 	require.NoError(t, err)
 	defer sessAnalyze.Close()
@@ -413,8 +413,8 @@ func initAssetsGenerators() error {
 	assetGenerators["assets/luks2.clevis.yubikey.img"] = assetGenerator{"generate_asset_luks.sh", []string{"OUTPUT=assets/luks2.clevis.yubikey.img", "LUKS_VERSION=2", "LUKS_PASSWORD=1234", "LUKS_UUID=f2473f71-9a61-4b16-ae54-8f942b2daf52", "FS_UUID=7acb3a9e-9b50-4aa2-9965-e41ae8467d8a", "CLEVIS_PIN=yubikey", `CLEVIS_CONFIG={"slot":2}`}}
 	assetGenerators["assets/gpt.img"] = assetGenerator{"generate_asset_gpt.sh", []string{"OUTPUT=assets/gpt.img", "FS_UUID=e5404205-ac6a-4e94-bb3b-14433d0af7d1", "FS_LABEL=newpart"}}
 	assetGenerators["assets/lvm.img"] = assetGenerator{"generate_asset_lvm.sh", []string{"OUTPUT=assets/lvm.img", "FS_UUID=74c9e30c-506f-4106-9f61-a608466ef29c", "FS_LABEL=lvmr00t"}}
-	assetGenerators["assets/mdraid_raid1.img"] = assetGenerator{"generate_asset_mdraid_raid1.sh", []string{"OUTPUT=assets/mdraid_raid1.img", "FS_UUID=98b1a905-3c72-42f0-957a-6c23b303b1fd", "FS_LABEL=boosmdraid"}}
-	assetGenerators["assets/mdraid_raid5.img"] = assetGenerator{"generate_asset_mdraid_raid5.sh", []string{"OUTPUT=assets/mdraid_raid5.img", "FS_UUID=e62c7dc0-5728-4571-b475-7745de2eef1e", "FS_LABEL=boosmdraid"}}
+	assetGenerators["assets/mdraid_raid1.img"] = assetGenerator{"generate_asset_mdraid_raid1.sh", []string{"OUTPUT=assets/mdraid_raid1.img", "FS_UUID=98b1a905-3c72-42f0-957a-6c23b303b1fd", "FS_LABEL=boostmdraid1"}}
+	assetGenerators["assets/mdraid_raid5.img"] = assetGenerator{"generate_asset_mdraid_raid5.sh", []string{"OUTPUT=assets/mdraid_raid5.img", "FS_UUID=e62c7dc0-5728-4571-b475-7745de2eef1e", "FS_LABEL=boostmdraid5"}}
 	assetGenerators["assets/archlinux.ext4.raw"] = assetGenerator{"generate_asset_archlinux_ext4.sh", []string{"OUTPUT=assets/archlinux.ext4.raw"}}
 	assetGenerators["assets/archlinux.btrfs.raw"] = assetGenerator{"generate_asset_archlinux_btrfs.sh", []string{"OUTPUT=assets/archlinux.btrfs.raw", "LUKS_PASSWORD=hello"}}
 	assetGenerators["assets/voidlinux.img"] = assetGenerator{"generate_asset_voidlinux.sh", []string{"OUTPUT=assets/voidlinux.raw"}}
@@ -534,7 +534,7 @@ func TestBooster(t *testing.T) {
 		disks:            []vmtest.QemuDisk{{Path: "assets/archlinux.ext4.raw", Format: "raw"}},
 		kernelArgs:       []string{"root=/dev/sda", "rw", "vfio-pci.ids=1002:67df,1002:aaf0"},
 
-		checkVmState: func(vm *vmtest.Qemu, t *testing.T) {
+		checkVMState: func(vm *vmtest.Qemu, t *testing.T) {
 			config := &ssh.ClientConfig{
 				User:            "root",
 				HostKeyCallback: ssh.InsecureIgnoreHostKey(),
@@ -544,7 +544,7 @@ func TestBooster(t *testing.T) {
 			require.NoError(t, err)
 			defer conn.Close()
 
-			dmesg := runSshCommand(t, conn, "dmesg")
+			dmesg := runSSHCommand(t, conn, "dmesg")
 			require.Contains(t, dmesg, "loading module vfio_pci params=\"ids=1002:67df,1002:aaf0\"", "expecting vfio_pci module loading")
 			require.Contains(t, dmesg, "vfio_pci: add [1002:67df[ffffffff:ffffffff]] class 0x000000/00000000", "expecting vfio_pci 1002:67df device")
 			require.Contains(t, dmesg, "vfio_pci: add [1002:aaf0[ffffffff:ffffffff]] class 0x000000/00000000", "expecting vfio_pci 1002:aaf0 device")
@@ -583,7 +583,7 @@ func TestBooster(t *testing.T) {
 		compression:  "xz",
 		mountTimeout: 1,
 		forceKill:    true,
-		checkVmState: func(vm *vmtest.Qemu, t *testing.T) {
+		checkVMState: func(vm *vmtest.Qemu, t *testing.T) {
 			require.NoError(t, vm.ConsoleExpect("Timeout waiting for root filesystem"))
 		},
 	}))
@@ -667,7 +667,7 @@ func TestBooster(t *testing.T) {
 
 		mountTimeout: 10,
 		forceKill:    true,
-		checkVmState: func(vm *vmtest.Qemu, t *testing.T) {
+		checkVMState: func(vm *vmtest.Qemu, t *testing.T) {
 			require.NoError(t, vm.ConsoleExpect("Timeout waiting for root filesystem"))
 		},
 	}))
@@ -769,7 +769,7 @@ func TestBooster(t *testing.T) {
 		disk:       "assets/voidlinux.img",
 		kernelArgs: []string{"root=/dev/sda"},
 		forceKill:  true,
-		checkVmState: func(vm *vmtest.Qemu, t *testing.T) {
+		checkVMState: func(vm *vmtest.Qemu, t *testing.T) {
 			require.NoError(t, vm.ConsoleExpect("runsvchdir: default: current."))
 		},
 	}))
@@ -780,7 +780,7 @@ func TestBooster(t *testing.T) {
 		if pkg == "linux-lts" {
 			compression = "gzip"
 		}
-		checkVmState := func(vm *vmtest.Qemu, t *testing.T) {
+		checkVMState := func(vm *vmtest.Qemu, t *testing.T) {
 			config := &ssh.ClientConfig{
 				User:            "root",
 				HostKeyCallback: ssh.InsecureIgnoreHostKey(),
@@ -810,7 +810,7 @@ func TestBooster(t *testing.T) {
 			sessShutdown, err := conn.NewSession()
 			require.NoError(t, err)
 			defer sessShutdown.Close()
-			// Arch Linux 5.4 does not shutdown with QEMU's 'shutdown' event for some reason. Force shutdown from ssh session.
+			// Arch Linux 5.4 does not shut down with QEMU's 'shutdown' event for some reason. Force shutdown from ssh session.
 			_, _ = sessShutdown.CombinedOutput("shutdown now")
 		}
 
@@ -822,7 +822,7 @@ func TestBooster(t *testing.T) {
 			disks:         []vmtest.QemuDisk{{Path: "assets/archlinux.ext4.raw", Format: "raw"}},
 			// If you need more debug logs append kernel args: "systemd.log_level=debug", "udev.log-priority=debug", "systemd.log_target=console", "log_buf_len=8M"
 			kernelArgs:   []string{"root=/dev/sda", "rw"},
-			checkVmState: checkVmState,
+			checkVMState: checkVMState,
 		}))
 
 		// more complex setup with LUKS and btrfs subvolumes
@@ -834,7 +834,7 @@ func TestBooster(t *testing.T) {
 			kernelArgs:    []string{"rd.luks.uuid=724151bb-84be-493c-8e32-53e123c8351b", "root=UUID=15700169-8c12-409d-8781-37afa98442a8", "rootflags=subvol=@", "rw", "quiet", "nmi_watchdog=0", "kernel.unprivileged_userns_clone=0", "net.core.bpf_jit_harden=2", "apparmor=1", "lsm=lockdown,yama,apparmor", "systemd.unified_cgroup_hierarchy=1", "add_efi_memmap"},
 			prompt:        "Enter passphrase for luks-724151bb-84be-493c-8e32-53e123c8351b:",
 			password:      "hello",
-			checkVmState:  checkVmState,
+			checkVMState:  checkVMState,
 		}))
 	}
 }

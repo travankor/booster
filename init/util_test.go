@@ -15,10 +15,10 @@ func TestMemZeroBytes(t *testing.T) {
 	t.Parallel()
 
 	data := []byte{10, 40, 50, 33}
-	MemZeroBytes(data)
+	memZeroBytes(data)
 	for i, e := range data {
 		if e != 0 {
-			t.Fatalf("MemZeroBytes() did not clear element # %v", i)
+			t.Fatalf("memZeroBytes() did not clear element # %v", i)
 		}
 	}
 }
@@ -83,7 +83,7 @@ func TestFormatUUID(t *testing.T) {
 		t.Fatalf("incorrect uuid formatting: expected %s, got %s", str, uuid.toString())
 	}
 
-	// msdos uuid
+	// ms-dos uuid
 	uuid = []byte{0x45, 0x22, 0x67, 0x77}
 	expected := "45226777"
 	if uuid.toString() != expected {

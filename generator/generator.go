@@ -84,7 +84,7 @@ var defaultModulesList = []string{
 
 func generateInitRamfs(conf *generatorConfig) error {
 	if _, err := os.Stat(conf.output); (err == nil || !os.IsNotExist(err)) && !conf.forceOverwrite {
-		return fmt.Errorf("File %v exists, please specify -force if you want to overwrite it", conf.output)
+		return fmt.Errorf("file %v exists, please specify -force if you want to overwrite it", conf.output)
 	}
 
 	img, err := NewImage(conf.output, conf.compression, conf.stripBinaries)
@@ -218,7 +218,7 @@ func (img *Image) appendInitConfig(conf *generatorConfig, kmod *Kmod, vconsole *
 		initConfig.Network.Dhcp = true
 	} else if conf.networkConfigType == netStatic {
 		initConfig.Network = &InitNetworkConfig{}
-		initConfig.Network.Ip = conf.networkStaticConfig.ip
+		initConfig.Network.IP = conf.networkStaticConfig.ip
 		initConfig.Network.Gateway = conf.networkStaticConfig.gateway
 		initConfig.Network.DNSServers = conf.networkStaticConfig.dnsServers
 	}

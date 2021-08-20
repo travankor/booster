@@ -29,7 +29,7 @@ func luksApplyFlags(d luks.Device) error {
 	for _, o := range strings.Split(param, ",") {
 		flag, ok := rdLuksOptions[o]
 		if !ok {
-			return fmt.Errorf("Unknown value in rd.luks.options: %v", o)
+			return fmt.Errorf("unknown value in rd.luks.options: %v", o)
 		}
 		if err := d.FlagsAdd(flag); err != nil {
 			return err
@@ -98,10 +98,10 @@ func luksOpen(dev string, name string) error {
 			if err == luks.ErrPassphraseDoesNotMatch {
 				continue
 			}
-			MemZeroBytes(password)
+			memZeroBytes(password)
 			return err
 		}
-		MemZeroBytes(password)
+		memZeroBytes(password)
 	}
 
 	// tokens did not work, let's unlock with a password
@@ -122,12 +122,12 @@ func luksOpen(dev string, name string) error {
 			if err == luks.ErrPassphraseDoesNotMatch {
 				continue
 			}
-			MemZeroBytes(password)
+			memZeroBytes(password)
 			return err
 		}
 
 		// zeroify the password so we do not keep the sensitive data in the memory
-		MemZeroBytes(password)
+		memZeroBytes(password)
 
 		// retry password
 		fmt.Println("   Incorrect passphrase, please try again")

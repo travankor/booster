@@ -254,7 +254,7 @@ func verifyCompressedFile(compression string, file string) error {
 	case "lz4":
 		verifyCmd = exec.Command("lz4", "--test", file)
 	default:
-		return fmt.Errorf("Unknown compression: %s", compression)
+		return fmt.Errorf("unknown compression format: %s", compression)
 	}
 	if testing.Verbose() {
 		verifyCmd.Stdout = os.Stdout

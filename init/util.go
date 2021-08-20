@@ -16,7 +16,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func MemZeroBytes(bytes []byte) {
+func memZeroBytes(bytes []byte) {
 	for i := range bytes {
 		bytes[i] = 0
 	}
@@ -54,6 +54,7 @@ func deviceNo(path string) (uint64, error) {
 	return stat.Rdev, nil
 }
 
+// UUID represents 16-bytes identifier https://en.wikipedia.org/wiki/Universally_unique_identifier
 type UUID []byte
 
 const uuidLen = 36
@@ -78,10 +79,10 @@ func (uuid UUID) toString() string {
 	if len(uuid) == 16 {
 		// UUID version 4
 		return fmt.Sprintf("%x-%x-%x-%x-%x", uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:10], uuid[10:])
-	} else {
-		// a regular non-UUID id (e.g. MSDOS id)
-		return hex.EncodeToString(uuid)
 	}
+
+	// a regular non-UUID id (e.g. MS-DOS id)
+	return hex.EncodeToString(uuid)
 }
 
 // stripQuotes removes leading and trailing quote symbols if they wrap the given sentence
@@ -121,9 +122,9 @@ func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 }
 
 // readClock returns value of the clock in usec units
-func readClock(clockId int32) (uint64, error) {
+func readClock(clockID int32) (uint64, error) {
 	var t unix.Timespec
-	err := unix.ClockGettime(clockId, &t)
+	err := unix.ClockGettime(clockID, &t)
 	if err != nil {
 		return 0, err
 	}
@@ -133,7 +134,7 @@ func readClock(clockId int32) (uint64, error) {
 // checkIfInitrd checks whether this binary run in a prepared initrd environment
 func checkIfInitrd() error {
 	if os.Getpid() != 1 {
-		return fmt.Errorf("Booster init binary does not run as PID 1")
+		return fmt.Errorf("booster init binary does not run as PID 1")
 	}
 
 	if _, err := os.Stat("/etc/initrd-release"); os.IsNotExist(err) {

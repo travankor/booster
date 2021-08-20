@@ -56,7 +56,7 @@ func NewImage(path string, compression string, stripBinaries bool) (*Image, erro
 	case "none":
 		compressor = file
 	default:
-		err = fmt.Errorf("Unknown compression format: %s", compression)
+		err = fmt.Errorf("unknown compression format: %s", compression)
 	}
 	if err != nil {
 		return nil, err

@@ -46,12 +46,15 @@ func loadKmap(fd uintptr, file string) error {
 	curr = 7
 
 	const (
+		// revive:disable:var-naming let's use names defined by libc
+
 		// from linux/kd.h
 		KDGKBENT = 0x4B46 /* gets one entry in translation table */
 		KDSKBENT = 0x4B47 /* sets one entry in translation table */
 
 		NR_KEYS        = 128
 		MAX_NR_KEYMAPS = 256
+		// revive:enable:var-naming
 	)
 
 	// load kmap
@@ -63,17 +66,17 @@ func loadKmap(fd uintptr, file string) error {
 			continue
 		}
 
-		type kbentry struct {
-			kb_table uint8
-			kb_index uint8
-			kb_value uint16
+		type kbEntry struct {
+			kbTable uint8
+			kbIndex uint8
+			kbValue uint16
 		}
 		for j := 0; j < NR_KEYS; j++ {
-			var ke kbentry
+			var ke kbEntry
 
-			ke.kb_table = uint8(i)
-			ke.kb_index = uint8(j)
-			ke.kb_value = *(*uint16)(unsafe.Pointer(&blob[curr]))
+			ke.kbTable = uint8(i)
+			ke.kbIndex = uint8(j)
+			ke.kbValue = *(*uint16)(unsafe.Pointer(&blob[curr]))
 			curr += 2
 
 			if _, _, errno := unix.Syscall(unix.SYS_IOCTL, fd, KDSKBENT, uintptr(unsafe.Pointer(&ke))); errno != 0 {
@@ -101,6 +104,8 @@ func consoleLoadKeymap(c *VirtualConsole) error {
 	defer cons.Close()
 
 	const (
+		// revive:disable:var-naming let's use names defined by libc
+
 		// from linux/kd.h
 		KDSETMODE = 0x4B3A
 		KDGETMODE = 0x4B3B
@@ -109,6 +114,7 @@ func consoleLoadKeymap(c *VirtualConsole) error {
 		K_XLATE     = 0x01
 		K_MEDIUMRAW = 0x02
 		K_UNICODE   = 0x03
+		// revive:enable:var-naming
 	)
 
 	var mode int

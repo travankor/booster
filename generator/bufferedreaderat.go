@@ -7,6 +7,7 @@ type bufferedReaderAt struct {
 	buffer []byte
 }
 
+// NewBufferedReaderAt creates a new reader that buffers read data and allows reading from specific offset
 func NewBufferedReaderAt(r io.Reader) io.ReaderAt {
 	return &bufferedReaderAt{r: r}
 }

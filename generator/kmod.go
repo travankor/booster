@@ -364,9 +364,9 @@ func (k *Kmod) scanModulesDir() error {
 			if info.Name() == "build" && filename == path.Join(k.hostModulesDir, "build") {
 				// skip header files under ./build dir
 				return filepath.SkipDir
-			} else {
-				return nil
 			}
+
+			return nil
 		}
 
 		parts := strings.Split(info.Name(), ".")
@@ -437,7 +437,7 @@ func (k *Kmod) readModulesDep(dir string, nameToPathMapping *Bimap) (map[string]
 
 		idx := strings.Index(line, ":")
 		if idx == -1 {
-			return nil, fmt.Errorf("Cannot parse a line from modules.dep file: %v", line)
+			return nil, fmt.Errorf("cannot parse a line from modules.dep file: %v", line)
 		}
 		koPath := line[:idx]
 		name, ok := nameToPathMapping.reverse[koPath]
@@ -479,7 +479,7 @@ func (k *Kmod) readModulesSoftDep(dir string) (map[string][]string, map[string][
 
 		parts := strings.Split(line, " ")
 		if parts[0] != "softdep" {
-			return nil, nil, fmt.Errorf("Invalid softdep line: %s", line)
+			return nil, nil, fmt.Errorf("invalid softdep line: %s", line)
 		}
 		modname := parts[1]
 		modname = k.resolveModname(modname)
@@ -785,7 +785,7 @@ func readModprobeOptions() (map[string]string, error) {
 }
 
 func (k *Kmod) filterModprobeForRequiredModules() {
-	for m, _ := range k.modprobeOptions {
+	for m := range k.modprobeOptions {
 		if _, ok := k.requiredModules[m]; !ok {
 			delete(k.modprobeOptions, m)
 		}
