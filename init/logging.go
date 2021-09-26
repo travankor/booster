@@ -19,8 +19,8 @@ var (
 )
 
 func printMessage(format string, level int, v ...interface{}) {
-	msg := fmt.Sprintf(format, v...)
-	fmt.Println(msg)
+	msg := fmt.Sprintf(format, v...) + "\n"
+	fmt.Print(msg)
 	_, _ = fmt.Fprint(kmsg, "<", level, ">booster: ", msg)
 }
 
